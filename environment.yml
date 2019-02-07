@@ -1,0 +1,10 @@
+name: HUP
+dependencies:
+  - python=3.7.*
+  - pip
+  - pip:
+    - pyautogui
+    - PySide2
+    - Pillow
+    - numpy
+    - pandas
