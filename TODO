@@ -3,3 +3,6 @@ Todo:
   ☐ Manually resize window
   ☐ Drawing / plotting on the transparent widget
   ☐ Send custom mouse / keyboard events to the window underneath
+  ☐ A way to visualize planned inputs by the AI
+  ☐ A way to get input from widgets (maybe a textinputwidget, imageinputwidget, etc)
+  ☐ Test environment file
