@@ -1,7 +1,35 @@
+
 import sys
 
-from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget)
-from PySide2.QtCore import Slot, Qt
+from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget, QRubberBand, QMainWindow)
+from PySide2.QtCore import Slot, Qt, QPoint, QSize, QRect
+
+
+class HeadsUpTop(QMainWindow):
+    '''Top level widget'''
+    def __init__(self, opacity=0.75):
+        QWidget.__init__(self)
+
+        # select area
+        self.rubberband = QRubberBand(QRubberBand.Rectangle, self)
+        self.origin = QPoint()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.origin = QPoint(event.pos())
+            self.rubberband.setGeometry(QRect(self.origin, QSize()))
+            self.rubberband.show()
+
+    def mouseMoveEvent(self, event):
+        if not self.origin.isNull():
+            self.rubberband.setGeometry(
+                QRect(self.origin, event.pos()).normalized())
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.rubberband.hide()
+            # determine selection, for example using QRect.intersects()
+            # and QRect.contains().
 
 
 class HeadsUpWidget(QWidget):
