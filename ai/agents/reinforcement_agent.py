@@ -1,7 +1,7 @@
 
-from collections import defaultdict, deque
+from agents.agent import Agent
 
-from ai.agents.agent import Agent
+from collections import defaultdict, deque
 
 
 class Reinforcement_Agent(Agent):
@@ -30,12 +30,12 @@ class Reinforcement_Agent(Agent):
         self._train = train
         print("train is set to {}".format(self._train))
 
-    def save(self):
+    def to_file(self):
         '''Save to a file'''
         raise NotImplementedError
 
     @classmethod
-    def load(cls):
+    def from_file(cls):
         '''Initialize from file'''
         raise NotImplementedError
 

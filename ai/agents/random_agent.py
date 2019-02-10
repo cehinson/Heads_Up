@@ -1,4 +1,6 @@
 
+from agents.agent import Agent
+
 import random
 
 
