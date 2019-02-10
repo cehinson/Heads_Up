@@ -1,5 +1,5 @@
 
-class Agent():
+class Agent:
     '''
     Something that percieves and acts in an environment.
     Base class for all other agents.
