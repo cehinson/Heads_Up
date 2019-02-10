@@ -15,6 +15,5 @@ Examples of sensors for a computer are:
     - text input
     - audio input
 
-The term **precept** means the agent's perceptual inputs at any given instant.
+The term **percept** means the agent's perceptual inputs at any given instant.
 An agent's **percept sequence** is the complete history of everything the agent has ever percieved.
-
