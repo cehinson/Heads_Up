@@ -1,3 +1,4 @@
+
 from actuators.actuator import Actuator
 
 import pyautogui
@@ -10,4 +11,8 @@ class MouseActuator(Actuator):
     '''Controls mouse'''
 
     def __init__(self):
+        raise NotImplementedError
+
+    @classmethod
+    def from_file(self):
         raise NotImplementedError
