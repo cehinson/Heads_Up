@@ -1,2 +1,2 @@
 # Heads Up
-A "Heads-Up Display" tailored for AI Projects.
+A "Heads-Up" Display with AI built in.
