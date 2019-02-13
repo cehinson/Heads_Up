@@ -25,8 +25,9 @@ from PySide2.QtCore import (
 class ScreenSelectWidget(TransparentWidget):
     '''A fully transparent widget used for selecting areas of a screen'''
 
-    def __init__(self):
+    def __init__(self, width, height):
         super().__init__(opacity=0.50)
+        self.resize(width, height)
         # select area
         self.rubberband = QRubberBand(QRubberBand.Rectangle, self)
         # FIXME set the color
@@ -63,9 +64,6 @@ class ScreenSelectWidget(TransparentWidget):
             self.w = self.rubberband.width()
             self.h = self.rubberband.height()
             print(self.getCoords())
-            # self.rubberband.hide()
-            # determine selection, for example using QRect.intersects()
-            # and QRect.contains()
 
     def getCoords(self):
         return (self.x, self.y, self.w, self.h)
