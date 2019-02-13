@@ -25,6 +25,8 @@ class TransparentWidget(QWidget):
         if frameless:
             self.setWindowFlag(Qt.FramelessWindowHint)
 
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
