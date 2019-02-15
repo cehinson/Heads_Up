@@ -34,6 +34,8 @@ class SelectScreenButton(QWidget):
         # setup select screen widget
         self.ssw = ScreenSelectWidget()
         self.make_connection(self.ssw)
+        # keep track of area selected
+        self.selected_area = TransparentWidget(opacity=0.5)
         # setup button
         self.select_area_button = QPushButton("Select Area")
         self.select_area_button.clicked.connect(self.select_area)
@@ -50,7 +52,11 @@ class SelectScreenButton(QWidget):
         self.ssw.hide()
         print("Area selected")
         print(rect)
-        self.show()
+        # show selected area
+        x, y, w, h = rect
+        self.selected_area.setGeometry(x, y, w, h)
+        self.selected_area.show()
+        # self.show()
 
     def make_connection(self, ssw_object):
         ssw_object.areaSelected.connect(self.area_selected)
