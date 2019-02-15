@@ -29,6 +29,7 @@ from PySide2.QtCore import (
 
 
 class SelectScreenButton(QWidget):
+    ''' Click on this to select an area of your screen '''
     def __init__(self):
         super(SelectScreenButton, self).__init__()
         # setup select screen widget
@@ -36,6 +37,7 @@ class SelectScreenButton(QWidget):
         self.make_connection(self.ssw)
         # keep track of area selected
         self.selected_area = TransparentWidget(opacity=0.5)
+        self.selected_area.setStyleSheet('background-color: rgb(255, 0, 0)')
         # setup button
         self.select_area_button = QPushButton("Select Area")
         self.select_area_button.clicked.connect(self.select_area)
@@ -69,17 +71,12 @@ class ScreenSelectWidget(TransparentWidget):
     areaSelected = Signal(tuple)
 
     def __init__(self):
-        super().__init__(opacity=0.50)
+        super().__init__(opacity=0.25)
         # select area
         self.rubberband = QRubberBand(QRubberBand.Rectangle, self)
-        # FIXME set the color
-        # self.pal = QPalette()
-        # self.pal.setColor(QPalette.Highlight, Qt.red)
-        # self.pal.setBrush(QPalette.Highlight, QBrush(Qt.red))
-        # self.rubberband.setPalette(self.pal)
-
+        # coords of mouse click
         self.origin = QPoint()
-        # selected areas coords
+        # selected area rect
         self.x = 0
         self.y = 0
         self.w = 0
