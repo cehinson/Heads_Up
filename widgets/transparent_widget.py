@@ -14,7 +14,7 @@ from PySide2.QtCore import (
 
 class TransparentWidget(QWidget):
     '''
-    A semi-transparent window
+    A semi-transparent widget
     '''
 
     def __init__(self, opacity=0.0, frameless=True):
