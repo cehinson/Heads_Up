@@ -17,18 +17,18 @@ class TransparentWidget(QWidget):
     A semi-transparent widget
     '''
 
-    def __init__(self, opacity=0.0, frameless=True):
-        QWidget.__init__(self)
+    def __init__(self, opacity=0.5, frameless=True):
+        QWidget.__init__(self, None, Qt.Window)
+        # set layout
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
         # make the window transparent
         self.setWindowOpacity(opacity)
+
+        self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         # remove the top bar
         if frameless:
             self.setWindowFlag(Qt.FramelessWindowHint)
-
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
-
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
 
 
 if __name__ == '__main__':
