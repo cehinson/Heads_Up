@@ -25,6 +25,8 @@ class HeadsUpWidget(TransparentWidget):
         super().__init__(opacity=opacity, frameless=True)
         # allow all events to pass through this window
         self.setWindowFlag(Qt.WindowTransparentForInput)
+        # closing this window also deletes it
+        self.setAttribute(Qt.WA_DeleteOnClose)
 
 
 if __name__ == '__main__':
