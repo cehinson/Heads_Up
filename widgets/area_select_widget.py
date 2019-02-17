@@ -10,7 +10,8 @@ from PySide2.QtWidgets import (
     QWidget,
     QPushButton,
     QVBoxLayout,
-    QLabel
+    QLabel,
+    QCheckBox
 )
 
 from PySide2.QtCore import (
@@ -25,27 +26,36 @@ from PySide2.QtCore import (
 
 class AreaSelectButton(QWidget):
     ''' Click on this to select area(s) of your screen '''
+
     def __init__(self):
         super(AreaSelectButton, self).__init__()
         self.layout = QVBoxLayout(self)
         # setup select screen widget
         self.ssw = AreaSelectWidget()
-        self.make_connection(self.ssw)
+        self._make_connection(self.ssw)
         # keep track of area(s) selected
-        # TODO select multiple areas
-        self.selected_area = HeadsUpWidget(opacity=0.5)
-        self.selected_area.setStyleSheet('background-color: rgb(255, 0, 0)')
+        self.selected_areas = []
         # setup button
         self.select_area_button = QPushButton("Select Area")
         self.select_area_button.clicked.connect(self.select_area)
-        # setup text to display coordinates selected
-        # self.selected_area_text = QLabel()
+        # checkbox to show selected areas
+        self.show_selected_areas = QCheckBox("Show Selected Areas")
+        self.show_selected_areas.setCheckState(Qt.CheckState.Checked)
+        self.show_selected_areas.stateChanged.connect(self.toggle_selected_areas)
         # add to layout
         self.layout.addWidget(self.select_area_button)
+        self.layout.addWidget(self.show_selected_areas)
 
     def select_area(self):
         self.hide()
         self.ssw.showMaximized()
+
+    def toggle_selected_areas(self):
+        for area in self.selected_areas:
+            if not area.isHidden():
+                area.hide()
+            else:
+                area.show()
 
     @Slot(tuple)
     def area_selected(self, rect):
@@ -53,15 +63,32 @@ class AreaSelectButton(QWidget):
         print("Area selected")
         print(rect)
         # show selected area
-        x, y, w, h = rect
-        self.selected_area.setGeometry(x, y, w, h)
-        self.selected_area.show()
+        self.addSelectedArea(rect)
+        self.showSelectedArea(-1)  # show the most recent added
+
         # self.layout.addWidget(self.selected_area_text)
         # self.selected_area_text.setText(str(rect))
         self.show()
 
-    def make_connection(self, ssw_object):
+    def _make_connection(self, ssw_object):
         ssw_object.areaSelected.connect(self.area_selected)
+
+    def showSelectedArea(self, index):
+        self.selected_areas[index].show()
+
+    def hideSelectedArea(self, index):
+        self.selected_areas[index].hide()
+
+    def addSelectedArea(self, rect):
+        new_area = HeadsUpWidget(opacity=0.5)
+        new_area.setStyleSheet('background-color: rgb(255, 0, 0)')
+        x, y, w, h = rect
+        new_area.setGeometry(x, y, w, h)
+        self.selected_areas.append(new_area)
+
+    def removeSelectedArea(self, index):
+        self.selected_areas[index].close()
+        del self.selected_areas[index]
 
 
 class AreaSelectWidget(TransparentWidget):
