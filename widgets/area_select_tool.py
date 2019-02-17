@@ -3,6 +3,7 @@ from transparent_widget import TransparentWidget
 from heads_up_widget import HeadsUpWidget
 
 import sys
+import json
 
 from PySide2.QtWidgets import (
     QRubberBand,
@@ -23,27 +24,33 @@ from PySide2.QtCore import (
 )
 
 
-class AreaSelectButton(QWidget):
+class AreaSelectTool(QWidget):
     ''' Click on this to select area(s) of your screen '''
 
     def __init__(self):
-        super(AreaSelectButton, self).__init__()
+        super(AreaSelectTool, self).__init__()
         self.layout = QVBoxLayout(self)
         # setup select screen widget
         self.ssw = AreaSelectWidget()
         self._make_connection(self.ssw)
         # keep track of area(s) selected
         self.selected_areas = []
+        self.rects = []
         # setup button
         self.select_area_button = QPushButton("Select Area")
         self.select_area_button.clicked.connect(self.select_area)
         # checkbox to show selected areas
         self.show_selected_areas = QCheckBox("Show Selected Areas")
         self.show_selected_areas.setCheckState(Qt.CheckState.Checked)
-        self.show_selected_areas.stateChanged.connect(self.toggle_selected_areas)
+        self.show_selected_areas.stateChanged.connect(
+            self.toggle_selected_areas)
+        # save the selected areas to a file
+        self.save_button = QPushButton("Save and Exit")
+        self.save_button.clicked.connect(self.save)
         # add to layout
         self.layout.addWidget(self.select_area_button)
         self.layout.addWidget(self.show_selected_areas)
+        self.layout.addWidget(self.save_button)
 
     def select_area(self):
         self.hide()
@@ -56,11 +63,16 @@ class AreaSelectButton(QWidget):
             else:
                 area.show()
 
+    def save(self):
+        with open('rects.json', 'w') as outfile:
+            json.dump(self.rects, outfile)
+        # FIXME this doesnt work
+        self.close()
+
     @Slot(tuple)
     def area_selected(self, rect):
         self.ssw.hide()
-        print("Area selected")
-        print(rect)
+        self.rects.append(rect)
         # show selected area
         self.addSelectedArea(rect)
         self.showSelectedArea(-1)  # show the most recent added
@@ -132,7 +144,7 @@ class AreaSelectWidget(TransparentWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    widget = AreaSelectButton()
+    widget = AreaSelectTool()
     widget.show()
 
     sys.exit(app.exec_())
