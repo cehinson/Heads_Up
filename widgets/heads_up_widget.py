@@ -7,8 +7,6 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtCore import Qt
 
 
-# TODO change to subclass TransparentWidget
-
 class HeadsUpWidget(TransparentWidget):
     '''
     A semi-transparent window that:
