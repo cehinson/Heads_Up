@@ -3,13 +3,8 @@ import sys
 
 from transparent_widget import TransparentWidget
 
-from PySide2.QtWidgets import (
-    QApplication,
-)
-
-from PySide2.QtCore import (
-    Qt
-)
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt
 
 
 # TODO change to subclass TransparentWidget
