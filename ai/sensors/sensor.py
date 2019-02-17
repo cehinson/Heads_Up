@@ -4,3 +4,7 @@ class Sensor:
 
     def __init__(self):
         raise NotImplementedError
+
+    def next_percept(self):
+        '''Return the next percept'''
+        raise NotImplementedError
