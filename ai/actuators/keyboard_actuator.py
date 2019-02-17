@@ -1,6 +1,7 @@
 
-from actuator import Actuator
+from actuators.actuator import Actuator
 
+from functools import partial
 import pyautogui
 import yaml
 
@@ -13,7 +14,7 @@ class KeyboardActuator(Actuator):
             if key not in pyautogui.KEYBOARD_KEYS:
                 raise "Invalid Key"
         self.keys = keys
-        self.actions = pyautogui.press
+        self.actions = [partial(pyautogui.press, key) for key in keys]
 
     def to_file(self, filename):
         with open(filename, 'w') as outfile:
