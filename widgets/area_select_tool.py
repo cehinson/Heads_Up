@@ -64,15 +64,15 @@ class AreaSelectTool(QWidget):
                 area.show()
 
     def save(self):
+        outdict = dict(enumerate(self.rects))
         with open('rects.json', 'w') as outfile:
-            json.dump(self.rects, outfile)
-        # FIXME this doesnt work
+            json.dump(outdict, outfile)
+        # FIXME close doesnt exit
         self.close()
 
     @Slot(tuple)
     def area_selected(self, rect):
         self.ssw.hide()
-        self.rects.append(rect)
         # show selected area
         self.addSelectedArea(rect)
         self.showSelectedArea(-1)  # show the most recent added
@@ -88,6 +88,7 @@ class AreaSelectTool(QWidget):
         self.selected_areas[index].hide()
 
     def addSelectedArea(self, rect):
+        self.rects.append(rect)
         new_area = HeadsUpWidget(opacity=0.5)
         new_area.setStyleSheet('background-color: rgb(255, 0, 0)')
         x, y, w, h = rect
@@ -95,6 +96,7 @@ class AreaSelectTool(QWidget):
         self.selected_areas.append(new_area)
 
     def removeSelectedArea(self, index):
+        del self.rects[index]
         self.selected_areas[index].close()
         del self.selected_areas[index]
 
