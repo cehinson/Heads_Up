@@ -10,7 +10,6 @@ from PySide2.QtWidgets import (
     QWidget,
     QPushButton,
     QVBoxLayout,
-    QLabel,
     QCheckBox
 )
 
@@ -65,9 +64,6 @@ class AreaSelectButton(QWidget):
         # show selected area
         self.addSelectedArea(rect)
         self.showSelectedArea(-1)  # show the most recent added
-
-        # self.layout.addWidget(self.selected_area_text)
-        # self.selected_area_text.setText(str(rect))
         self.show()
 
     def _make_connection(self, ssw_object):
