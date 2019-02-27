@@ -8,6 +8,7 @@ class VisionSensor(Sensor):
     '''Input from a region of the screen'''
 
     def __init__(self, rect):
+        super().__init__()
         self.rect = rect
 
     def next_percept(self):
