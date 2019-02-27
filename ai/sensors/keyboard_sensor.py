@@ -11,6 +11,5 @@ class KeyboardSensor(Sensor):
         super().__init__()
         self.events = deque()
 
-
     def next_percept(self):
         return self.events.pop()
