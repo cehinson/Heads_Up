@@ -5,6 +5,7 @@ from functools import partial
 import pyautogui
 import yaml
 
+# TODO pyautogui.press for attack keys, KeyDown and KeyUp for movement
 
 class KeyboardActuator(Actuator):
     '''Controls keyboard'''

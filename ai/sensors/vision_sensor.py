@@ -4,6 +4,15 @@ from sensor import Sensor
 import pyautogui
 
 
+# TODO randomly writing this idea here:
+'''
+When an environment changes by x% :
+    - take another screenshot
+    - evalutate the reward given prev action
+    - etc
+'''
+
+
 class VisionSensor(Sensor):
     '''Input from a region of the screen'''
 
