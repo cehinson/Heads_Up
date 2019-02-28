@@ -3,9 +3,10 @@ dependencies:
   - python=3.7.*
   - pip
   - pip:
-    - pyautogui
-    - PySide2
-    - Pillow
-    - numpy
-    - pandas
-    - pytesseract
+      - pyautogui # control mouse and keyboard
+      - pynput # monitor mouse and keyboard
+      - PySide2 # QT for python
+      - Pillow # image processing
+      - numpy
+      - pandas
+      - pytesseract # text recognition
