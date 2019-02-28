@@ -4,7 +4,7 @@ from agents.agent import Agent
 import random
 
 
-class Random_Agent(Agent):
+class RandomAgent(Agent):
     '''Agent that moves randomly'''
 
     def __init__(self, sensors, actuators):

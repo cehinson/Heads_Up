@@ -4,11 +4,11 @@ Demo for StreetPyghter
 
 import time
 
-from agents.random_agent import Random_Agent
+from agents.random_agent import RandomAgent
 from actuators.keyboard_actuator import KeyboardActuator
 
 keyboard = KeyboardActuator(['w', 'a', 's', 'd', 'b', 'n', 'm'])
-agent = Random_Agent(None, keyboard)
+agent = RandomAgent(None, keyboard)
 
 input("Press any key to continue...")
 while True:

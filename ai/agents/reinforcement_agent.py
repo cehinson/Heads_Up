@@ -2,9 +2,11 @@
 from agents.agent import Agent
 
 from collections import defaultdict, deque
+import random
+import numpy as np
 
 
-class Reinforcement_Agent(Agent):
+class ReinforcementAgent(Agent):
     '''Use reinforcement learning to pick the best next action'''
 
     def __init__(self, sensors, actuators):
