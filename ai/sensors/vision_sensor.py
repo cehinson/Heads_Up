@@ -21,6 +21,7 @@ class VisionSensor(Sensor):
         self.rect = rect
 
     def next_percept(self):
+        # TODO benchmark this
         return pyautogui.screenshot(region=self.rect)
 
 
