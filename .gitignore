@@ -2,6 +2,8 @@
 # Manually added
 .vscode
 .mypy_cache
+# dont want to acidentally commit this
+widgets/capture.py
 
 
 # Created by https://www.gitignore.io/api/qt,linux,macos,python,windows,visualstudiocode
