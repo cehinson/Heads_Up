@@ -6,5 +6,6 @@ class Sensor:
         raise NotImplementedError
 
     def next_percept(self):
+        # TODO make this async
         '''Return the next percept'''
         raise NotImplementedError
