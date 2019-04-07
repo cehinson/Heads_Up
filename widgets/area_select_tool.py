@@ -90,6 +90,7 @@ class AreaSelectTool(QWidget):
     def addSelectedArea(self, rect):
         self.rects.append(rect)
         new_area = HeadsUpWidget(opacity=0.5)
+        # TODO make different colors for easier identification
         new_area.setStyleSheet('background-color: rgb(255, 0, 0)')
         x, y, w, h = rect
         new_area.setGeometry(x, y, w, h)
