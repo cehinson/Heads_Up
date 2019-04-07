@@ -5,7 +5,7 @@ from pynput import keyboard
 
 
 class KeyboardSensor(Sensor):
-    '''Monitor key presses '''
+    '''Monitor key presses'''
 
     def __init__(self):
         self.events = deque()
