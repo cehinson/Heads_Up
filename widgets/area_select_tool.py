@@ -31,8 +31,8 @@ class AreaSelectTool(QWidget):
         super(AreaSelectTool, self).__init__()
         self.layout = QVBoxLayout(self)
         # setup select screen widget
-        self.ssw = AreaSelectWidget()
-        self._make_connection(self.ssw)
+        self.area_select_widget = AreaSelectWidget()
+        self._make_connection(self.area_select_widget)
         # keep track of area(s) selected
         self.selected_areas = []
         self.rects = []
@@ -43,7 +43,8 @@ class AreaSelectTool(QWidget):
         self.show_selected_areas = QCheckBox("Show Selected Areas")
         self.show_selected_areas.setCheckState(Qt.CheckState.Checked)
         self.show_selected_areas.stateChanged.connect(
-            self.toggle_selected_areas)
+            self.toggle_selected_areas
+        )
         # save the selected areas to a file
         self.save_button = QPushButton("Save and Exit")
         self.save_button.clicked.connect(self.save)
@@ -54,7 +55,7 @@ class AreaSelectTool(QWidget):
 
     def select_area(self):
         self.hide()
-        self.ssw.showMaximized()
+        self.area_select_widget.showMaximized()
 
     def toggle_selected_areas(self):
         for area in self.selected_areas:
@@ -72,7 +73,7 @@ class AreaSelectTool(QWidget):
 
     @Slot(tuple)
     def area_selected(self, rect):
-        self.ssw.hide()
+        self.area_select_widget.hide()
         # show selected area
         self.addSelectedArea(rect)
         self.showSelectedArea(-1)  # show the most recent added
@@ -129,7 +130,8 @@ class AreaSelectWidget(TransparentWidget):
     def mouseMoveEvent(self, event):
         if not self.origin.isNull():
             self.rubberband.setGeometry(
-                QRect(self.origin, event.pos()).normalized())
+                QRect(self.origin, event.pos()).normalized()
+            )
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:

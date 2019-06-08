@@ -10,7 +10,10 @@ class KeyboardSensor(Sensor):
     def __init__(self):
         self.events = deque()
         # Collect events until released
-        with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
+        with keyboard.Listener(
+            on_press=self.on_press,
+            on_release=self.on_release
+        ) as listener:
             listener.join()
 
     def next_percept(self):

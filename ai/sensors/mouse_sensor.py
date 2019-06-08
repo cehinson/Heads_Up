@@ -10,8 +10,11 @@ class MouseSensor(Sensor):
     def __init__(self):
         self.events = deque()
         # Collect events until released
-        with mouse.Listener(on_move=self.on_move, on_click=self.on_click,
-                            on_scroll=self.on_scroll) as listener:
+        with mouse.Listener(
+            on_move=self.on_move,
+            on_click=self.on_click,
+            on_scroll=self.on_scroll
+        ) as listener:
             listener.join()
 
     def next_percept(self):
