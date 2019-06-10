@@ -8,6 +8,7 @@ class MouseSensor(Sensor):
     '''Monitor mouse events'''
 
     def __init__(self):
+        super().__init__()
         self.events = deque()
         # Collect events until released
         with mouse.Listener(

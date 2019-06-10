@@ -1,13 +1,3 @@
-import functools
-
-
-# NOTE
-'''
-This currently does not work as intended...
-It seems that registering a function will
-not happen until the function is actually
-called.
-'''
 
 
 class ActionList:
@@ -23,9 +13,14 @@ class ActionList:
         return self._actions[position]
 
     def __call__(self, func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            print('registered {}'.format(func.__name__))
-            self._actions.append(func)
-            func(*args, **kwargs)
-        return wrapper
+        '''
+        NOTE: I do NOT need to use functools.wraps for this.
+        This is because functools.wraps will not actually
+        register the function until it is called.
+        It also appears that not using functools.wraps
+        (in this case) does NOT result in any name-mangling
+        problems.
+        '''
+        print('registered {}'.format(func.__name__))
+        self._actions.append(func)
+        return func

@@ -1,6 +1,5 @@
 
 from actuator import Actuator
-from action import ActionList
 
 import pyautogui
 import yaml
@@ -9,10 +8,7 @@ import yaml
 # TODO is there a difference between KeyDown + KeyUp and press?
 
 
-key_action = ActionList()
-
-
-class KeyboardActuator(Actuator):
+class Keyboard(Actuator):
     '''Controls keyboard'''
 
     def __init__(self, keys, allow_combos=False):
@@ -36,12 +32,14 @@ class KeyboardActuator(Actuator):
             actuator = cls(keys)
             return actuator
 
+    @Actuator.actions
     def press(self, key):
         pyautogui.press(key)
 
     def is_down(self, key):
         return self._is_down[key]
 
+    @Actuator.actions
     def down(self, key):
         # FIXME cant press an already down key
         if not self.allow_combos:
@@ -50,6 +48,7 @@ class KeyboardActuator(Actuator):
                     self.up(k)
         pyautogui.keyDown(key)
 
+    @Actuator.actions
     def up(self, key):
         # FIXME cant lift an already up key
         pyautogui.keyUp(key)
@@ -57,4 +56,4 @@ class KeyboardActuator(Actuator):
 
 if __name__ == '__main__':
 
-    test_actuator = KeyboardActuator(['w', 'a', 's', 'd'])
+    testKeys = Keyboard(['w', 'a', 's', 'd'])

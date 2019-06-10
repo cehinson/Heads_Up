@@ -8,6 +8,7 @@ class KeyboardSensor(Sensor):
     '''Monitor key presses'''
 
     def __init__(self):
+        super().__init__()
         self.events = deque()
         # Collect events until released
         with keyboard.Listener(
