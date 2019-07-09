@@ -1,15 +1,14 @@
 
-from sensor import Sensor
 from collections import deque
 from pynput import keyboard
 
 
-class KeyboardSensor(Sensor):
-    '''Monitor key presses'''
+class KeypressListener:
+    '''Monitor and record key presses'''
 
     def __init__(self):
         super().__init__()
-        self.events = deque()
+        self.presses = deque()
         # Collect events until released
         with keyboard.Listener(
             on_press=self.on_press,
@@ -21,6 +20,7 @@ class KeyboardSensor(Sensor):
         return self.events.pop()
 
     def on_press(self, key):
+        self.presses.append(key)
         try:
             print('alphanumeric key {0} pressed'.format(key.char))
         except AttributeError:
@@ -34,6 +34,6 @@ class KeyboardSensor(Sensor):
 
 
 if __name__ == '__main__':
-    mysensor = KeyboardSensor()
+    mysensor = KeypressListener()
     while True:
         pass

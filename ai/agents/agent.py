@@ -1,8 +1,7 @@
 
 class Agent:
     '''
-    Something that percieves and acts in an environment.
-    Base class for all other agents.
+    Base class for other agents
     '''
 
     def __init__(self, sensors, actuators):

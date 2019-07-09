@@ -68,8 +68,7 @@ class AreaSelectTool(QWidget):
         outdict = dict(enumerate(self.rects))
         with open('rects.json', 'w') as outfile:
             json.dump(outdict, outfile)
-        # FIXME close doesnt exit
-        self.close()
+        app.exit()
 
     @Slot(tuple)
     def area_selected(self, rect):

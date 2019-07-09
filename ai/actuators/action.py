@@ -24,3 +24,7 @@ class ActionList:
         print('registered {}'.format(func.__name__))
         self._actions.append(func)
         return func
+
+
+# global list of actions
+actions = ActionList()
