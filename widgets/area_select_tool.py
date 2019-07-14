@@ -9,6 +9,7 @@ from PySide2.QtWidgets import (
     QRubberBand,
     QApplication,
     QWidget,
+    QLabel,
     QPushButton,
     QVBoxLayout,
     QCheckBox
@@ -17,6 +18,7 @@ from PySide2.QtWidgets import (
 from PySide2.QtCore import (
     Qt,
     QRect,
+    QMargins,
     QPoint,
     QSize,
     Signal,
@@ -52,6 +54,7 @@ class AreaSelectTool(QWidget):
         self.layout.addWidget(self.select_area_button)
         self.layout.addWidget(self.show_selected_areas)
         self.layout.addWidget(self.save_button)
+        print(QApplication.desktop().screenGeometry())
 
     def select_area(self):
         self.hide()
@@ -92,8 +95,7 @@ class AreaSelectTool(QWidget):
         new_area = HeadsUpWidget(opacity=0.5)
         # TODO make different colors for easier identification
         new_area.setStyleSheet('background-color: rgb(255, 0, 0)')
-        x, y, w, h = rect
-        new_area.setGeometry(x, y, w, h)
+        new_area.setGeometry(rect)
         self.selected_areas.append(new_area)
 
     def removeSelectedArea(self, index):
@@ -108,17 +110,16 @@ class AreaSelectWidget(TransparentWidget):
     # add a signal that emits the area selected
     areaSelected = Signal(tuple)
 
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__(opacity=0.25)
+        # QLabel.__init__(self, parent)
         # select area
         self.rubberband = QRubberBand(QRubberBand.Rectangle, self)
         # coords of mouse click
         self.origin = QPoint()
-        # selected area rect
-        self.x = 0
-        self.y = 0
-        self.w = 0
-        self.h = 0
+
+        self.x_offset = QApplication.desktop().availableGeometry().x()
+        self.y_offset = QApplication.desktop().availableGeometry().y()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -128,21 +129,19 @@ class AreaSelectWidget(TransparentWidget):
 
     def mouseMoveEvent(self, event):
         if not self.origin.isNull():
-            self.rubberband.setGeometry(
-                QRect(self.origin, event.pos()).normalized()
-            )
+            self.rubberband.setGeometry(QRect(self.origin, event.pos()).normalized())
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.x = self.rubberband.x()
-            self.y = self.rubberband.y()
-            self.w = self.rubberband.width()
-            self.h = self.rubberband.height()
-            self.areaSelected.emit(self.getCoords())
             self.rubberband.hide()
-
-    def getCoords(self):
-        return (self.x, self.y, self.w, self.h)
+            area_selected = self.rubberband.geometry()
+            coords = QRect(
+                self.x_offset + area_selected.x(),
+                self.y_offset + area_selected.y(),
+                area_selected.width(),
+                area_selected.height()
+            )
+            self.areaSelected.emit(coords)
 
 
 if __name__ == '__main__':
