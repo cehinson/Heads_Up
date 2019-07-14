@@ -39,7 +39,7 @@ class AreaSelectTool(QWidget):
         # keep track of area(s) selected
         self.selected_areas = []
         self.rects = []
-        # setup button
+        # select an area on the screen
         self.select_area_button = QPushButton("Select Area")
         self.select_area_button.clicked.connect(self.select_area)
         # remove a specfic area
@@ -57,13 +57,16 @@ class AreaSelectTool(QWidget):
         # reset selected areas
         self.reset_button = QPushButton("Reset")
         self.reset_button.clicked.connect(self.reset)
-        # add to layout
+        # add all ui elements to layout
         self.layout.addWidget(self.select_area_button)
         self.layout.addWidget(self.show_selected_areas)
         self.layout.addWidget(self.remove_area_button)
         self.layout.addWidget(self.reset_button)
         self.layout.addWidget(self.save_button)
-        print(QApplication.desktop().screenGeometry())
+
+    # NOTE both the select_area and remove_area functions only launch a widget
+    # for selecting / removing areas.  This is necessary because the selected
+    # areas themselves are unable to be clicked on
 
     def select_area(self):
         self.hide()
@@ -81,6 +84,7 @@ class AreaSelectTool(QWidget):
                 area.show()
 
     def save(self):
+        '''Save the selected areas to a json file and quit the app'''
         outdict = {i: [r.x(), r.y(), r.width(), r.height()] for i, r in enumerate(self.rects)}
         with open('rects.json', 'w') as outfile:
             json.dump(outdict, outfile)
@@ -143,21 +147,6 @@ class AreaSelectTool(QWidget):
     def hideSelectedArea(self, index):
         self.selected_areas[index].hide()
 
-    # def mousePressEvent(self, event):
-    #     # right on a selected area to remove it
-    #     if event.button() == Qt.RightButton:
-    #         origin = QPoint(event.pos())
-    #         for i, r, a in enumerate(zip(self.rects, self.selected_areas)):
-    #             if r.contains(origin):
-    #                 a.close()
-    #                 del self.selected_areas[i]
-    #                 del self.rects[i]
-
-    # def removeSelectedArea(self, index):
-    #     del self.rects[index]
-    #     self.selected_areas[index].close()
-    #     del self.selected_areas[index]
-
 
 class AreaSelectWidget(TransparentWidget):
     '''A rubber-band used for selecting areas of a screen'''
@@ -178,6 +167,7 @@ class AreaSelectWidget(TransparentWidget):
         self.y_offset = QApplication.desktop().availableGeometry().y()
 
     def mousePressEvent(self, event):
+        # left click starts the rubber band
         if event.button() == Qt.LeftButton:
             self.origin = QPoint(event.pos())
             self.rubberband.setGeometry(QRect(self.origin, QSize()))
