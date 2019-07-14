@@ -9,7 +9,6 @@ from PySide2.QtWidgets import (
     QRubberBand,
     QApplication,
     QWidget,
-    QLabel,
     QPushButton,
     QVBoxLayout,
     QCheckBox
@@ -18,7 +17,6 @@ from PySide2.QtWidgets import (
 from PySide2.QtCore import (
     Qt,
     QRect,
-    QMargins,
     QPoint,
     QSize,
     Signal,
@@ -68,7 +66,8 @@ class AreaSelectTool(QWidget):
                 area.show()
 
     def save(self):
-        outdict = dict(enumerate(self.rects))
+        # outdict = dict(enumerate(self.rects))
+        outdict = {i: r.getCoords() for i, r in enumerate(self.rects)}
         with open('rects.json', 'w') as outfile:
             json.dump(outdict, outfile)
         app.exit()
@@ -117,7 +116,7 @@ class AreaSelectWidget(TransparentWidget):
         self.rubberband = QRubberBand(QRubberBand.Rectangle, self)
         # coords of mouse click
         self.origin = QPoint()
-
+        # account for the dock / menu bar
         self.x_offset = QApplication.desktop().availableGeometry().x()
         self.y_offset = QApplication.desktop().availableGeometry().y()
 
