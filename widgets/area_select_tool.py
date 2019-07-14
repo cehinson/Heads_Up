@@ -66,8 +66,7 @@ class AreaSelectTool(QWidget):
                 area.show()
 
     def save(self):
-        # outdict = dict(enumerate(self.rects))
-        outdict = {i: r.getCoords() for i, r in enumerate(self.rects)}
+        outdict = {i: [r.x(), r.y(), r.width(), r.height()] for i, r in enumerate(self.rects)}
         with open('rects.json', 'w') as outfile:
             json.dump(outdict, outfile)
         app.exit()

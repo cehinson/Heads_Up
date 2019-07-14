@@ -2,6 +2,7 @@ import json
 import pyautogui
 from PySide2.QtWidgets import QApplication
 import sys
+# FIXME this seems like a hack...
 sys.path.append('/Users/charles/projects/personal/heads-up/')
 sys.path.append('/Users/charles/projects/personal/heads-up/widgets/')
 from widgets import heads_up_widget
@@ -18,6 +19,7 @@ def run():
 
     widgets = []
     for rect in rects.values():
+        print(rect)
         widget = heads_up_widget.HeadsUpWidget()
         widget.setStyleSheet('background-color: rgb(255, 0, 0)')
         widget.setGeometry(*rect)
