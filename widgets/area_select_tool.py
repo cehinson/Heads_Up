@@ -48,9 +48,13 @@ class AreaSelectTool(QWidget):
         # save the selected areas to a file
         self.save_button = QPushButton("Save and Exit")
         self.save_button.clicked.connect(self.save)
+        # reset selected areas
+        self.reset_button = QPushButton("Reset")
+        self.reset_button.clicked.connect(self.reset)
         # add to layout
         self.layout.addWidget(self.select_area_button)
         self.layout.addWidget(self.show_selected_areas)
+        self.layout.addWidget(self.reset_button)
         self.layout.addWidget(self.save_button)
         print(QApplication.desktop().screenGeometry())
 
@@ -70,6 +74,15 @@ class AreaSelectTool(QWidget):
         with open('rects.json', 'w') as outfile:
             json.dump(outdict, outfile)
         app.exit()
+
+    def reset(self):
+        for area in self.selected_areas: 
+            area.close()
+
+        del self.selected_areas
+        del self.rects
+        self.selected_areas = []
+        self.rects = []
 
     @Slot(tuple)
     def area_selected(self, rect):
