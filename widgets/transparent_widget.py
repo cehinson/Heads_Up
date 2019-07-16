@@ -3,7 +3,6 @@ import sys
 
 from PySide2.QtWidgets import (
     QApplication,
-    QVBoxLayout,
     QWidget,
 )
 
@@ -16,17 +15,30 @@ class TransparentWidget(QWidget):
     ''' A semi-transparent widget '''
 
     def __init__(self, opacity=0.5, frameless=True):
-        QWidget.__init__(self, None, Qt.Window)
-        # set layout
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-        # make the window transparent
+        QWidget.__init__(self, parent=None)
+
         self.setWindowOpacity(opacity)
 
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         # remove the top bar
         if frameless:
             self.setWindowFlag(Qt.FramelessWindowHint)
+
+        # closing this window also deletes it
+        self.setAttribute(Qt.WA_DeleteOnClose)
+
+
+class HeadsUpWidget(TransparentWidget):
+    '''
+    A semi-transparent window that:
+        - always stays on top
+        - sends mouse / keyboard events through
+    '''
+
+    def __init__(self, opacity=0.25):
+        super().__init__(opacity=opacity, frameless=True)
+        # allow all events to pass through this window
+        self.setWindowFlag(Qt.WindowTransparentForInput)
 
 
 if __name__ == '__main__':

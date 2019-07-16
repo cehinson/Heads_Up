@@ -1,6 +1,5 @@
 
-from transparent_widget import TransparentWidget
-from heads_up_widget import HeadsUpWidget
+from transparent_widget import TransparentWidget, HeadsUpWidget
 
 # from matplotlib import cm
 import random
@@ -14,7 +13,7 @@ from PySide2.QtWidgets import (
     QWidget,
     QPushButton,
     QVBoxLayout,
-    QCheckBox
+    QCheckBox,
 )
 
 from PySide2.QtCore import (
@@ -30,15 +29,15 @@ from PySide2.QtCore import (
 class AreaSelectTool(QWidget):
     ''' Select areas of your screen '''
 
-    def __init__(self):
+    def __init__(self, screen_size):
         super(AreaSelectTool, self).__init__()
+        self.screen_size = screen_size
         self.layout = QVBoxLayout(self)
         # setup widget for selecting areas of the screen
         self.area_edit_widget = AreaEditWidget()
         self._make_connection(self.area_edit_widget)
         # keep track of area(s) selected
         self.selected_areas = []
-        self.rects = []
         # button to add / remove a specific area
         self.edit_area_button = QPushButton("Add / Remove Areas")
         self.edit_area_button.clicked.connect(self.edit_area)
@@ -67,25 +66,29 @@ class AreaSelectTool(QWidget):
 
     def edit_area(self):
         self.hide()
-        self.area_edit_widget.showMaximized()
+        self.area_edit_widget.resize(
+            self.screen_size.width(),
+            self.screen_size.height()
+        )
+        self.area_edit_widget.show()
 
     @Slot(QRect)
     def area_selected(self, rect):
         self.area_edit_widget.hide()
+
         # add the selected area
-        self.rects.append(rect)
         new_area = HeadsUpWidget(opacity=0.5)
         new_area.setGeometry(rect)
         # randomly assign a color
         r = random.randint(0, 255)
         g = random.randint(0, 255)
         b = random.randint(0, 255)
-
         color_str = 'rgb(' + str(r) + ', ' + str(g) + ', ' + str(b) + ')'
         new_area.setStyleSheet('background-color: ' + color_str)
 
+        new_area.show()
+        # add the new area to the list
         self.selected_areas.append(new_area)
-        self.selected_areas[-1].show()  # show the most recent added
 
         self.show()
 
@@ -93,12 +96,10 @@ class AreaSelectTool(QWidget):
     def area_removed(self, pos):
         self.area_edit_widget.hide()
         # remove the area that was clicked on
-        for i, x in enumerate(zip(self.rects, self.selected_areas)):
-            r, a = x  # TODO can I do this in only one line?
-            if r.contains(pos):
+        for i, a in enumerate(self.selected_areas):
+            if a.geometry().contains(pos):
                 a.close()
                 del self.selected_areas[i]
-                del self.rects[i]
 
         self.show()
 
@@ -115,13 +116,14 @@ class AreaSelectTool(QWidget):
             area.close()
 
         del self.selected_areas
-        del self.rects
         self.selected_areas = []
-        self.rects = []
 
     def save(self):
         '''Save the selected areas to a json file and quit the app'''
-        outdict = {i: [r.x(), r.y(), r.width(), r.height()] for i, r in enumerate(self.rects)}
+        outdict = {
+            i: [a.geometry().x(), a.geometry().y(), a.geometry().width(), a.geometry().height()]
+            for i, a in enumerate(self.selected_areas)
+        }
         with open('rects.json', 'w') as outfile:
             json.dump(outdict, outfile)
         app.exit()
@@ -135,14 +137,10 @@ class AreaEditWidget(TransparentWidget):
 
     def __init__(self, parent=None):
         super().__init__(opacity=0.25)
-        # QLabel.__init__(self, parent)
         # select area
         self.rubberband = QRubberBand(QRubberBand.Rectangle, self)
         # coords of mouse click
         self.origin = QPoint()
-        # account for the dock / menu bar
-        self.x_offset = QApplication.desktop().availableGeometry().x()
-        self.y_offset = QApplication.desktop().availableGeometry().y()
 
     def mousePressEvent(self, event):
         # left click starts the rubber band
@@ -152,11 +150,7 @@ class AreaEditWidget(TransparentWidget):
             self.rubberband.show()
         # right click on a selected area to remove it
         if event.button() == Qt.RightButton:
-            print(event.pos())
-            # FIXME not sure if this offset is needed...
-            offset = QPoint(self.x_offset, self.y_offset)
-            pos = event.pos() + offset
-            self.areaRemoved.emit(pos)
+            self.areaRemoved.emit(event.pos())
 
     def mouseMoveEvent(self, event):
         if not self.origin.isNull():
@@ -166,20 +160,16 @@ class AreaEditWidget(TransparentWidget):
         if event.button() == Qt.LeftButton:
             self.rubberband.hide()
             area_selected = self.rubberband.geometry()
-            coords = QRect(
-                self.x_offset + area_selected.x(),
-                self.y_offset + area_selected.y(),
-                area_selected.width(),
-                area_selected.height()
-            )
-            print(coords)
-            self.areaSelected.emit(coords)
+            self.areaSelected.emit(area_selected)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    widget = AreaSelectTool()
+    screen = app.primaryScreen()
+    size = screen.size()
+
+    widget = AreaSelectTool(size)
     widget.show()
 
     sys.exit(app.exec_())
