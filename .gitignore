@@ -3,8 +3,8 @@
 .vscode
 .mypy_cache
 # dont want to acidentally commit this
-widgets/capture.py
-
+no_commit/*
+no_commit
 
 # Created by https://www.gitignore.io/api/qt,linux,macos,python,windows,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=qt,linux,macos,python,windows,visualstudiocode
