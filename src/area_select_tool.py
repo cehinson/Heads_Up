@@ -7,6 +7,8 @@ import random
 import sys
 import json
 
+from ai.sensors.mouse_listener import MouseListener
+
 from PySide2.QtWidgets import (
     QRubberBand,
     QApplication,
@@ -31,17 +33,22 @@ class AreaSelectTool(QWidget):
 
     def __init__(self, screen_size):
         super(AreaSelectTool, self).__init__()
+        # keep track of area(s) selected
+        self.selected_areas = []
+        # follow mouse movements
+        # self.mouse_listener = MouseListener()
+
+        # ---------- Setup GUI ----------
+
         self.screen_size = screen_size
         self.layout = QVBoxLayout(self)
         # setup widget for selecting areas of the screen
         self.area_edit_widget = AreaEditWidget()
         self._make_connection(self.area_edit_widget)
-        # keep track of area(s) selected
-        self.selected_areas = []
         # button to add / remove a specific area
         self.edit_area_button = QPushButton("Add / Remove Areas")
         self.edit_area_button.clicked.connect(self.edit_area)
-        # checkbox to show selected areas
+        # checkbox to show / hide selected areas
         self.show_selected_areas = QCheckBox("Show Selected Areas")
         self.show_selected_areas.setCheckState(Qt.CheckState.Checked)
         self.show_selected_areas.stateChanged.connect(
@@ -75,7 +82,6 @@ class AreaSelectTool(QWidget):
     @Slot(QRect)
     def area_selected(self, rect):
         self.area_edit_widget.hide()
-
         # add the selected area
         new_area = HeadsUpWidget(opacity=0.5)
         new_area.setGeometry(rect)

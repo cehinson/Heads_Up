@@ -1,9 +1,31 @@
 
-from agents.agent import Agent
-
 from collections import defaultdict, deque
 import random
 import numpy as np
+
+
+class Agent:
+    '''
+    Base class for other agents
+    '''
+
+    def __init__(self, sensors, actuators):
+        self.sensors = sensors
+        self.actuators = actuators
+
+    def next_action(self):
+        raise NotImplementedError
+
+
+class RandomAgent(Agent):
+
+    def __init__(self, sensors, actuators):
+        super().__init__(sensors, actuators)
+        self.actions = actuators.actions
+
+    def next_action(self):
+        '''Choose next action randomly'''
+        return random.choice(self.actions)
 
 
 class ReinforcementAgent(Agent):

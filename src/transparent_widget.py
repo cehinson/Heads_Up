@@ -30,7 +30,7 @@ class TransparentWidget(QWidget):
 
 class HeadsUpWidget(TransparentWidget):
     '''
-    A semi-transparent window that:
+    A transparent widget that:
         - always stays on top
         - sends mouse / keyboard events through
     '''
