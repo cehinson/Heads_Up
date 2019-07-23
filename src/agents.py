@@ -5,9 +5,6 @@ import numpy as np
 
 
 class Agent:
-    '''
-    Base class for other agents
-    '''
 
     def __init__(self, sensors, actuators):
         self.sensors = sensors

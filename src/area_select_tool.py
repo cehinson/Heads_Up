@@ -1,14 +1,13 @@
 
-from transparent_widget import TransparentWidget, HeadsUpWidget
-
-# from matplotlib import cm
-import random
-
-import sys
-import json
-
-from ai.sensors.mouse_listener import MouseListener
-
+from PySide2.QtCore import (
+    Qt,
+    QRect,
+    QPoint,
+    QSize,
+    Signal,
+    Slot,
+    QThread
+)
 from PySide2.QtWidgets import (
     QRubberBand,
     QApplication,
@@ -17,15 +16,17 @@ from PySide2.QtWidgets import (
     QVBoxLayout,
     QCheckBox,
 )
+from transparent_widget import TransparentWidget, HeadsUpWidget
+from sensors import Camera
 
-from PySide2.QtCore import (
-    Qt,
-    QRect,
-    QPoint,
-    QSize,
-    Signal,
-    Slot,
-)
+import random
+import sys
+import os
+import json
+import numpy
+import mss
+# NOTE -- do not use the Queue from the queue module, it will lock...
+from multiprocessing import Process, Queue
 
 
 class AreaSelectTool(QWidget):
@@ -35,13 +36,23 @@ class AreaSelectTool(QWidget):
         super(AreaSelectTool, self).__init__()
         # keep track of area(s) selected
         self.selected_areas = []
-        # follow mouse movements
-        # self.mouse_listener = MouseListener()
+        # TODO
+        print(screen_size)
+        # TODO add method to detect screen size in the camera class...
+        screen = {"top": 0, "left": 0, "width": screen_size.width(), "height": screen_size.height()}
+        self.image_queue = Queue()  # TODO maybe move this into the camera class itself...
+        self.camera = Camera(screen)
+
+        self.screenshot_process = Process(target=self.camera.grab, args=(self.image_queue,))
+        self.save_process = Process(target=self.camera.save, args=(self.image_queue,))
 
         # ---------- Setup GUI ----------
 
         self.screen_size = screen_size
         self.layout = QVBoxLayout(self)
+        # camera controls
+        self.camera_button = QPushButton("Start Camera")
+        self.camera_button.clicked.connect(self.toggle_camera)
         # setup widget for selecting areas of the screen
         self.area_edit_widget = AreaEditWidget()
         self._make_connection(self.area_edit_widget)
@@ -61,6 +72,7 @@ class AreaSelectTool(QWidget):
         self.reset_button = QPushButton("Reset")
         self.reset_button.clicked.connect(self.reset)
         # add all ui elements to layout
+        self.layout.addWidget(self.camera_button)
         self.layout.addWidget(self.edit_area_button)
         self.layout.addWidget(self.show_selected_areas)
         self.layout.addWidget(self.reset_button)
@@ -79,6 +91,21 @@ class AreaSelectTool(QWidget):
         )
         self.area_edit_widget.show()
 
+    def toggle_camera(self):
+        if not self.camera._running:
+            # start the camera
+            print('start_camera')
+            self.camera.start()
+            self.save_process.start()
+            self.screenshot_process.start()
+            self.camera_button.setText("Stop Camera")
+        else:
+            # stop the camera
+            self.camera.terminate()
+            self.screenshot_process.terminate()
+            self.save_process.terminate()
+            self.camera_button.setText("Start Camera")
+
     @Slot(QRect)
     def area_selected(self, rect):
         self.area_edit_widget.hide()
@@ -91,11 +118,9 @@ class AreaSelectTool(QWidget):
         b = random.randint(0, 255)
         color_str = 'rgb(' + str(r) + ', ' + str(g) + ', ' + str(b) + ')'
         new_area.setStyleSheet('background-color: ' + color_str)
-
         new_area.show()
         # add the new area to the list
         self.selected_areas.append(new_area)
-
         self.show()
 
     @Slot(QPoint)
