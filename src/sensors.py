@@ -5,6 +5,7 @@ from collections import deque
 
 # Camera
 import multiprocessing
+# NOTE -- do not use the Queue from the queue module, it will lock...
 from multiprocessing import Queue, Process
 import os
 import sys
@@ -82,7 +83,6 @@ class KeypressListener:
 
 class Camera:
     # TODO calculate the fps
-    # TODO maybe list_of_funcs could be either a list of partials or an actionlist
     def __init__(self, screen, out_dir='screenshots'):
 
         # ex: screen = {"top": 40, "left": 0, "width": 800, "height": 640}
@@ -96,7 +96,7 @@ class Camera:
         # it seems like maybe each function should have their own queues
         self.queue = Queue()
         self.processes = []
-        self.funcs_to_run = [self.grab, self.save]
+        self.funcs_to_run = [self.grab, self.ocr]
 
     def start(self):
         assert(len(self.funcs_to_run) < multiprocessing.cpu_count())
@@ -121,14 +121,18 @@ class Camera:
         while self._running:
             with mss.mss() as sct:
                 img = sct.grab(self.screen)
+                # FIXME I probably should not have to convert two times...
                 img = numpy.array(sct.grab(self.screen))
                 img = Image.fromarray(img)
                 # TODO should i move segmentation somewhere else?
-                for rect in self.rects_to_segment:
-                    # FIXME the coords are wrong because of how QT does the screen size
-                    coords = [rect.x(), rect.y(), rect.x()+rect.width(), rect.y()+rect.height()]
-                    sub_img = img.crop(box=coords)
-                    self.queue.put(sub_img)
+                if self.rects_to_segment:
+                    for rect in self.rects_to_segment:
+                        # FIXME the coords are wrong (only on laptop monitor) because of how QT does the screen size
+                        coords = [rect.x(), rect.y(), rect.x()+rect.width(), rect.y()+rect.height()]
+                        sub_img = img.crop(box=coords)
+                        self.queue.put(sub_img)
+                else:
+                    self.queue.put(img)
         self.queue.put(None)
 
     def ocr(self):
@@ -139,8 +143,6 @@ class Camera:
             if img is None:
                 break
 
-            # for rect in self.rects_to_segment:
-            #     sub_img = img[rect.x():rect.width(), rect.y():rect.height(), :]
             print(pytesseract.image_to_string(img))
             sys.stdout.flush()  # FIXME this does not seem to work
 

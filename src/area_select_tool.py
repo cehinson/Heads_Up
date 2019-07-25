@@ -21,8 +21,6 @@ from sensors import Camera
 import random
 import sys
 import json
-# NOTE -- do not use the Queue from the queue module, it will lock...
-from multiprocessing import Process, Queue
 
 
 class AreaSelectTool(QWidget):
@@ -32,17 +30,9 @@ class AreaSelectTool(QWidget):
         super(AreaSelectTool, self).__init__()
         # keep track of area(s) selected
         self.selected_areas = []
-        # TODO add method to detect screen size in the camera class...
+        # TODO add method to detect screen size...
         screen = {"top": 0, "left": 0, "width": screen_size.width(), "height": screen_size.height()}
-        # self.image_queue = Queue()  # TODO maybe move this into the camera class itself...
         self.camera = Camera(screen)
-
-        # FIXME I should probably have a list of processes and set these in a function somewhere...
-        # I should be able to start the Camera in a separate process and have all of its functions run
-        # that way
-        # self.screenshot_process = Process(target=self.camera.grab, args=(self.image_queue,))
-        # self.save_process = Process(target=self.camera.save, args=(self.image_queue,))
-        # self.print_process = Process(target=self.camera.ocr, args=(self.image_queue,))
 
         # ---------- Setup GUI ----------
 
@@ -90,19 +80,16 @@ class AreaSelectTool(QWidget):
         self.area_edit_widget.show()
 
     def toggle_camera(self):
+        # update the list of areas to segment
+        self.camera.rects_to_segment = []
+        for area in self.selected_areas:
+            self.camera.rects_to_segment.append(area.geometry())
+        # start / stop the camera
         if not self.camera._running:
-            # start the camera
             self.camera.start()
-            # self.screenshot_process.start()
-            # self.print_process.start()
-            # self.save_process.start()
             self.camera_button.setText("Stop Camera")
         else:
-            # stop the camera
             self.camera.terminate()
-            # self.screenshot_process.terminate()
-            # self.save_process.terminate()
-            # self.print_process.terminate()
             self.camera_button.setText("Start Camera")
 
     @Slot(QRect)
@@ -120,10 +107,6 @@ class AreaSelectTool(QWidget):
         new_area.show()
         # add the new area to the list
         self.selected_areas.append(new_area)
-        # let the camera know the new area to segment
-        # FIXME add a method to remove a rect
-        print(new_area.geometry())
-        self.camera.rects_to_segment.append(new_area.geometry())
         self.show()
 
     @Slot(QPoint)
