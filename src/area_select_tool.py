@@ -26,17 +26,21 @@ import json
 class AreaSelectTool(QWidget):
     ''' Select areas of your screen '''
 
-    def __init__(self, screen_size):
+    def __init__(self, screen_size, pixel_ratio):
         super(AreaSelectTool, self).__init__()
+
+        # account for high-dpi screens
+        self.screen_size = screen_size
+        self.pixel_ratio = pixel_ratio
+
         # keep track of area(s) selected
         self.selected_areas = []
         # TODO add method to detect screen size...
         screen = {"top": 0, "left": 0, "width": screen_size.width(), "height": screen_size.height()}
-        self.camera = Camera(screen)
+        self.camera = Camera(screen, pixel_ratio)
 
         # ---------- Setup GUI ----------
 
-        self.screen_size = screen_size
         self.layout = QVBoxLayout(self)
         # camera controls
         self.camera_button = QPushButton("Start Camera")
@@ -50,9 +54,7 @@ class AreaSelectTool(QWidget):
         # checkbox to show / hide selected areas
         self.show_selected_areas = QCheckBox("Show Selected Areas")
         self.show_selected_areas.setCheckState(Qt.CheckState.Checked)
-        self.show_selected_areas.stateChanged.connect(
-            self.toggle_selected_areas
-        )
+        self.show_selected_areas.stateChanged.connect(self.toggle_selected_areas)
         # save the selected areas to a file
         self.save_button = QPushButton("Save and Exit")
         self.save_button.clicked.connect(self.save)
@@ -141,8 +143,10 @@ class AreaSelectTool(QWidget):
             i: [a.geometry().x(), a.geometry().y(), a.geometry().width(), a.geometry().height()]
             for i, a in enumerate(self.selected_areas)
         }
+
         with open('rects.json', 'w') as outfile:
             json.dump(outdict, outfile)
+
         app.exit()
 
 
@@ -184,10 +188,13 @@ class AreaEditWidget(TransparentWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
+    # TODO can this logic be moved into AreaSelectTool?
     screen = app.primaryScreen()
     size = screen.size()
+    ratio = screen.devicePixelRatio()
+    print('screen size : {} \n pixel ratio : {}'.format(size, ratio))
 
-    widget = AreaSelectTool(size)
+    widget = AreaSelectTool(size, ratio)
     widget.show()
 
     sys.exit(app.exec_())
