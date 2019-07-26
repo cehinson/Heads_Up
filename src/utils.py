@@ -1,6 +1,8 @@
 # miscellaneous functions to help widgets go here
 import numpy
+import pyautogui
 from PySide2.QtWidgets import QApplication
+from PySide2.QtGui import QPainter
 
 
 def qimage_to_numpy_array(q_image):
@@ -23,3 +25,17 @@ def scale_pixels(x, y, w, h):
     h = int(h / actual_height * qt_size.height())
 
     return x, y, w, h
+
+
+def test_screen_size():
+    print(pyautogui.size())
+
+
+def qpaint_screen_size():
+    painter = QPainter()
+    print(painter.physicalDpiX(), painter.physicalDpiY())
+
+
+if __name__ == "__main__":
+    test_screen_size()
+    qpaint_screen_size()
