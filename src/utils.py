@@ -1,41 +1,43 @@
 # miscellaneous functions to help widgets go here
 import numpy
-import pyautogui
-from PySide2.QtWidgets import QApplication
-from PySide2.QtGui import QPainter
+import time
+import os
+from functools import wraps
+from contextlib import contextmanager
+
+
+def clear_screen():
+    if os.name == 'posix':
+        _ = os.system('clear')
+    else:
+        _ = os.system('cls')
 
 
 def qimage_to_numpy_array(q_image):
+    '''Convert a QImage to a numpy array'''
     ptr = q_image.constBits()
     arr = numpy.array(ptr).reshape(q_image.width(), q_image.height(), 4)  # Copies the data
     return arr
 
 
-def scale_pixels(x, y, w, h):
-    # actual screen dimentions (opencv will use this)
-    # FIXME this only works when no external screen is connected...
-    actual_width = 2880
-    actual_height = 1800
-    # screen size in QT
-    qt_size = QApplication.desktop().screenGeometry()
-
-    x = int(x / actual_width * qt_size.width())
-    w = int(w / actual_width * qt_size.width())
-    y = int(y / actual_height * qt_size.height())
-    h = int(h / actual_height * qt_size.height())
-
-    return x, y, w, h
+def timethis(func):
+    '''Decorator for profiling functions'''
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        r = func(*args, **kwargs)
+        end = time.perf_counter()
+        print('{}.{} : {}'.format(func.__module__, func.__name__, end-start))
+        return r
+    return wrapper
 
 
-def test_screen_size():
-    print(pyautogui.size())
-
-
-def qpaint_screen_size():
-    painter = QPainter()
-    print(painter.physicalDpiX(), painter.physicalDpiY())
-
-
-if __name__ == "__main__":
-    test_screen_size()
-    qpaint_screen_size()
+@contextmanager
+def timeblock(label):
+    '''Context manager to time a block of code'''
+    start = time.perf_counter()
+    try:
+        yield
+    finally:
+        end = time.perf_counter()
+        print('{} : {}'.format(label, end-start))
