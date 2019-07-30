@@ -1,10 +1,12 @@
 
+from utils import clear_screen
+
 # Keyboard and Mouse Listeners
 from pynput import mouse, keyboard
 from collections import deque
 
 # Camera
-import multiprocessing
+import multiprocessing as mp
 # NOTE -- do not use the Queue from the queue module, it will lock...
 from multiprocessing import Queue, Process, Event
 import os
@@ -89,7 +91,6 @@ class Camera:
         self.screen = screen
         # deal with high-dpi screens
         self.pixel_ratio = pixel_ratio
-
         # TODO this need to be updated in the area slect tool
         self.rects_to_segment = []
 
@@ -108,7 +109,7 @@ class Camera:
         self.funcs_to_run = [self.grab, self.ocr]
 
     def start(self):
-        assert(len(self.funcs_to_run) < multiprocessing.cpu_count())
+        assert(len(self.funcs_to_run) < mp.cpu_count())
         self._running = True
         for func in self.funcs_to_run:
             # TODO add args
@@ -127,11 +128,13 @@ class Camera:
         # TODO add a way to limit the fps...
         while self._running:
             with mss.mss() as sct:
+                # set event to false and block all other threads
+                self._event.clear()
+
                 img = sct.grab(self.screen)
                 # FIXME I probably should not have to convert two times...
                 img = numpy.array(sct.grab(self.screen))
                 img = Image.fromarray(img)
-
                 if self.rects_to_segment:
                     for rect in self.rects_to_segment:
                         # FIXME the coords are wrong (only on laptop monitor) because of how QT does the screen size
@@ -139,10 +142,10 @@ class Camera:
                         sub_img = img.crop(box=coords)
                         self.queue.put(sub_img)
                         # wait for the consumer to process the image
-                        self._event.wait()
                 else:
                     self.queue.put(img)
-                    self._event.wait()
+
+                self._event.wait()
 
         self.queue.put(self._sentinel)
 
@@ -155,10 +158,11 @@ class Camera:
                 self.queue.put(self._sentinel)
                 break
 
+            # clear_screen()
             print(pytesseract.image_to_string(img))
             # we have completed processing the image
             self._event.set()
-            sys.stdout.flush()  # FIXME this does not seem to work
+            # sys.stdout.flush()  # FIXME this does not seem to work
 
     def save(self):
         ''' Save the images in the queue '''
