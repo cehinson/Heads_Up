@@ -143,7 +143,7 @@ class AreaSelectTool(QWidget):
             i: [a.geometry().x(), a.geometry().y(), a.geometry().width(), a.geometry().height()]
             for i, a in enumerate(self.selected_areas)
         }
-
+        # FIXME switch to something else like pickle
         with open('rects.json', 'w') as outfile:
             json.dump(outdict, outfile)
 
