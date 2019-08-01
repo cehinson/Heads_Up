@@ -15,10 +15,10 @@ from PySide2.QtWidgets import (
     QVBoxLayout,
     QCheckBox,
 )
-from transparent_widget import TransparentWidget, HeadsUpWidget
+
+from transparent_widget import TransparentWidget, HeadsUpWidget, BoundingBoxWidget
 from sensors import Camera
 
-import random
 import sys
 import json
 
@@ -86,6 +86,8 @@ class AreaSelectTool(QWidget):
         self.camera.rects_to_segment = []
         for area in self.selected_areas:
             self.camera.rects_to_segment.append(area.geometry())
+        # show / hide selected areas
+        self.toggle_selected_areas()
         # start / stop the camera
         if not self.camera._running:
             self.camera.start()
@@ -98,14 +100,10 @@ class AreaSelectTool(QWidget):
     def area_selected(self, rect):
         self.area_edit_widget.hide()
         # add the selected area
-        new_area = HeadsUpWidget(opacity=0.5)
+        # new_area = HeadsUpWidget(opacity=0.5)
+        new_area = BoundingBoxWidget()  # HeadsUpWidget()
         new_area.setGeometry(rect)
-        # randomly assign a color
-        r = random.randint(0, 255)
-        g = random.randint(0, 255)
-        b = random.randint(0, 255)
-        color_str = 'rgb(' + str(r) + ', ' + str(g) + ', ' + str(b) + ')'
-        new_area.setStyleSheet('background-color: ' + color_str)
+        new_area.randomize_color()
         new_area.show()
         # add the new area to the list
         self.selected_areas.append(new_area)
@@ -153,7 +151,6 @@ class AreaSelectTool(QWidget):
 class AreaEditWidget(TransparentWidget):
 
     # add a signal that emits the area selected
-    # TODO can these be class members...?
     areaSelected = Signal(QRect)
     areaRemoved = Signal(QPoint)
 
