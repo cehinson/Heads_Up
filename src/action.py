@@ -1,16 +1,19 @@
 
 
-class ActionList:
-    '''Class that represents actions available to an acutator'''
+class Registry:
+    '''
+    Decorator class for adding functions to a list -- 
+    Used to create a list of actions for an Agent
+    '''
 
     def __init__(self):
-        self._actions = []
+        self._registry = []
 
     def __len__(self):
-        return len(self._actions)
+        return len(self._registry)
 
     def __getitem__(self, position):
-        return self._actions[position]
+        return self._registry[position]
 
     def __call__(self, func):
         '''
@@ -22,9 +25,9 @@ class ActionList:
         problems.
         '''
         print('registered {}'.format(func.__name__))
-        self._actions.append(func)
+        self._registry.append(func)
         return func
 
 
 # global list of actions
-actions = ActionList()
+actions = Registry()
