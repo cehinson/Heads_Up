@@ -1,12 +1,22 @@
 # miscellaneous functions to help widgets go here
+from collections import namedtuple
 import numpy
 import time
 import os
 from functools import wraps
 from contextlib import contextmanager
 
+BoundingBox = namedtuple('BoundingBox', ['x', 'y', 'width', 'height'])
+
+
+def qrect_to_boundingbox(q_rect):
+    return BoundingBox(x=q_rect.x(), y=q_rect.y(), width=q_rect.width(), height=q_rect.height())
+
 
 def clear_screen():
+    '''
+    Clear the terminal
+    '''
     if os.name == 'posix':
         _ = os.system('clear')
     else:
