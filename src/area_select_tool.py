@@ -101,7 +101,7 @@ class AreaSelectTool(QWidget):
         self.area_edit_widget.hide()
         # add the selected area
         # new_area = HeadsUpWidget(opacity=0.5)
-        new_area = BoundingBoxWidget()  # HeadsUpWidget()
+        new_area = HeadsUpWidget()
         new_area.setGeometry(rect)
         new_area.randomize_color()
         new_area.show()
