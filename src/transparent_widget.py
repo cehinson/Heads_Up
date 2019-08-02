@@ -1,5 +1,6 @@
 
 import sys
+import random
 
 from PySide2.QtWidgets import (
     QApplication,
@@ -24,18 +25,24 @@ from PySide2.QtGui import (
 class TransparentWidget(QWidget):
     ''' A semi-transparent widget '''
 
-    def __init__(self, opacity=0.5, frameless=True):
+    def __init__(self, opacity=0.5):
         QWidget.__init__(self, parent=None)
 
         self.setWindowOpacity(opacity)
 
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         # remove the top bar
-        if frameless:
-            self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setWindowFlag(Qt.FramelessWindowHint)
 
         # closing this window also deletes it
         self.setAttribute(Qt.WA_DeleteOnClose)
+
+    def randomize_color(self):
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        color_str = 'rgb(' + str(r) + ', ' + str(g) + ', ' + str(b) + ')'
+        self.setStyleSheet('background-color: ' + color_str)
 
 
 class HeadsUpWidget(TransparentWidget):
@@ -46,7 +53,7 @@ class HeadsUpWidget(TransparentWidget):
     '''
 
     def __init__(self, opacity=0.25):
-        super().__init__(opacity=opacity, frameless=True)
+        super().__init__(opacity=opacity)
         # allow all events to pass through this window
         self.setWindowFlag(Qt.WindowTransparentForInput)
 
@@ -62,9 +69,14 @@ class BoundingBoxWidget(HeadsUpWidget):
         super().__init__(opacity=0.75)
         self.color = QColor('green')
         self.label = label
-        # self.setGeometry(loc)
         # this makes the background entirely transparent
         self.setAttribute(Qt.WA_OpaquePaintEvent)
+
+    def randomize_color(self):
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        self.color = QColor.fromRgb(r, g, b)
 
     def paintEvent(self, e):
 
